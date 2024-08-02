@@ -2,13 +2,13 @@
 //alunoDao.php
 class ClienteDao
 {
-    public function create(User $obj)
+    public function create(Cliente $obj)
     {
         try {
             //criando a conexao com o banco
             $banco = Conexao::conectar();
             //criando o comando SQL
-            $sql = "INSERT INTO aluno(nome, email, senha, cpf, telefone1, telefone2, cep, logradouro, numero, cidade, estado) 
+            $sql = "INSERT INTO cliente(nome, email, senha, cpf, telefone1, telefone2, cep, logradouro, numero, cidade, estado) 
                 VALUES (?,?,?,?,?,?,?,?,?,?,?)";
             //Prepara o banco para execução
             $query = $banco->prepare($sql);
@@ -19,7 +19,7 @@ class ClienteDao
             Conexao::desconectar();
             return true;
         } catch (PDOException $e) {
-            //echo $e->getMessage();
+            // echo $e->getMessage();
             return false;
         }
     }
@@ -37,7 +37,7 @@ class ClienteDao
             $lista = [];
             //percorrendo o resultado
             foreach ($resultado as $linha) {
-                $lista[] = new User(
+                $lista[] = new Cliente(
                     $linha["idCliente"],
                     $linha["nome"],
                     $linha["email"],
@@ -74,7 +74,7 @@ class ClienteDao
             $lista = [];
             //percorrendo o resultado
             if (is_array($resultado)) {
-                $lista[] = new User(
+                $lista[] = new Cliente(
                     $resultado["idCliente"],
                     $resultado["nome"],
                     $resultado["email"],
@@ -127,7 +127,7 @@ class ClienteDao
         }
     }
 
-    public function update(User $obj)
+    public function update(Cliente $obj)
     {
         try {
             $banco = Conexao::conectar();

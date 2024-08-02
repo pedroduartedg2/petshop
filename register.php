@@ -7,27 +7,11 @@ include_once "model/cliente.php";
 include_once "dao/clienteDao.php";
 include_once "config/utils.php";
 
-//Criando o objeto Dao
-$objDao = new ClienteDao();
-
-// //Validando o email e a senha
-if (isset($_POST["btSalvar"])) {
-    $res = $objDao->login($_POST["email"], $_POST["senha"]);
-    if (count($res) == 0) {
-        $_SESSION["mensagem"] = "Usuário e/ou senha incorreto(s)";
-        exibeMensagem();
-    } else {
-        $_SESSION["logado"] = true;
-        $_SESSION["idaluno"] = $res[0]->idaluno;
-
-        header("location:index.php");
-    }
-}
 ?>
 <div class="h-[calc(100vh-71.75px)] flex flex-col items-center justify-center gap-2">
     <div class="flex gap-6 flex-col">
         <h1 class="font-bold text-purple-900 text-2xl">Cadastro</h1>
-        <form action="POST" class="flex flex-col gap-2">
+        <form action="controller/clienteController.php" method="POST" class="flex flex-col gap-2">
             <div class="flex flex-col">
                 <label for="nome" class="text-sm">Nome *</label>
                 <input name="nome" type="text" placeholder="Digite seu nome" class="p-2 rounded-md border border-slate-200" required>
@@ -78,26 +62,8 @@ if (isset($_POST["btSalvar"])) {
                     <input name="estado" type="text" placeholder="Digite o estado" class="p-2 rounded-md border border-slate-200" required>
                 </div>
             </div>
-            <button name="btSalvar" type="submit" class="bg-purple-900 p-2 text-slate-50 font-semibold rounded-md mt-2">Cadastrar</button>
+            <button name="btRegister" type="submit" class="bg-purple-900 p-2 text-slate-50 font-semibold rounded-md mt-2">Cadastrar</button>
         </form>
         <p class="text-center">Já possui uma conta? <a href="./login.php" class="underline">Entrar</a></p>
     </div>
 </div>
-<!-- formulário de cadastro/alterar
-    <form method="post" class="py-5">
-        <div class="col-sm-12 col-md-4 offset-md-4 p-1">
-        <input type="email" name="email" class="form-control" 
-        placeholder="Digite o e-mail">
-    </div>
-    <div class="col-sm-12 col-md-4 offset-md-4 p-1">
-        <input type="password" name="senha" class="form-control" 
-        placeholder="Digite a senha" required >
-    </div>
-    <div class="col-sm-12 col-md-4 offset-md-4 p-1">
-        <div class="d-grid gap-2">
-            <input type="submit" name="btSalvar" class="btn btn-success" 
-            value="Entrar">
-            <a href="cadastro.php" class="btn btn-link">Registre-se</a>
-        </div>
-    </div>
-</form> -->

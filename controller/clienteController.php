@@ -3,75 +3,65 @@ session_start();
 include_once "../config/conexao.php";
 include_once "../dao/clienteDao.php";
 include_once "../model/cliente.php";
+include_once "../config/utils.php";
 
-if ((isset($_POST["btSalvar"])) || (isset($_GET["id"]))) {
-    //Armazenando os nomes do arquivo
-    $temp = $_FILES["foto"]["tmp_name"];
-    $foto = date("YmdHis") . $_FILES["foto"]["name"];
+$response = ["success" => false, "mensagem" => ""];
 
+if (isset($_POST["btRegister"])) {
+    $nome = $_POST['nome'];
+    $email = $_POST['email'];
+    $senha = $_POST['senha'];
+    $cpf = $_POST['cpf'];
+    $telefone1 = $_POST['celular'];
+    $telefone2 = $_POST['telefone'];
+    $cep = $_POST['cep'];
+    $logradouro = $_POST['logradouro'];
+    $numero = $_POST['numero'];
+    $cidade = $_POST['cidade'];
+    $estado = $_POST['estado'];
 
-    //objeto do tipo aluno
-    $obj = new Cliente(
-        $_POST["idAluno"],
-        $_POST["nome"],
-        $_POST["email"],
-        $foto,
-        MD5($_POST["senha"]),
-        isset($_POST["adm"]) ? 1 : 0,
-        $_POST["apelido"]
+    $cliente = new Cliente(
+        null,
+        $nome,
+        $email,
+        MD5($senha),
+        $cpf,
+        $telefone1,
+        $telefone2,
+        $cep,
+        $logradouro,
+        $numero,
+        $cidade,
+        $estado
     );
 
+    $clienteDao = new ClienteDao();
+    $sucesso = $clienteDao->create($cliente);
 
-    //objeto alunoDao
-    $objDao = new ClienteDao();
-
-    //verificando a operação que o usuário escolheu
-    if (isset($_GET["id"])) {
-        //excluir
-        $resultado = $objDao->delete($_GET["id"]);
-        if ($resultado)
-            $_SESSION["mensagem"] = "Excluido com sucesso!";
-        else
-            $_SESSION["mensagem"] = "Erro ao excluir";
-    } elseif ($_POST["idAluno"] == "") {
-        //inserir
-        if ($_FILES["foto"]["name"] == "")
-            $obj->foto = null;
-        $resultado = $objDao->create($obj);
-        if (($resultado) && ($_FILES["foto"]["name"] != "")) {
-            if (move_uploaded_file($temp, "../foto/" . $foto))
-                $_SESSION["mensagem"] = "Imagem enviada com sucesso!";
-            else
-                $_SESSION["mensagem"] = "Erro ao enviar a imagem";
-        } else {
-            if ($_FILES["foto"]["name"] != "")
-                $_SESSION["mensagem"] = "Erro ao cadastrar e/ou enviar a imagem";
-            elseif (!$resultado)
-                $_SESSION["mensagem"] = "Erro ao cadastrar";
-            else
-                $_SESSION["mensagem"] = "Cadastro realizado com sucesso";
-        }
+    if ($sucesso) {
+        $response["success"] = true;
+        $response["mensagem"] = "Cliente criado com sucesso!";
     } else {
-        //alterar
-        if ($_POST["senha"] == "")
-            $obj->senha = null;
-        if ($_FILES["foto"]["name"] == "")
-            $obj->foto = null;
-        $resultado = $objDao->update($obj);
-        if (($resultado) && ($_FILES["foto"]["name"] != "")) {
-            if (move_uploaded_file($temp, "../foto/" . $foto))
-                $_SESSION["mensagem"] = "Imagem enviada com sucesso!";
-            else
-                $_SESSION["mensagem"] = "Erro ao enviar a imagem";
-        } else {
-            if ($_FILES["foto"]["name"] != "")
-                $_SESSION["mensagem"] = "Erro ao cadastrar e/ou enviar a imagem";
-            elseif (!$resultado)
-                $_SESSION["mensagem"] = "Erro ao cadastrar";
-            else
-                $_SESSION["mensagem"] = "Cadastro realizado com sucesso";
-        }
+        $response["mensagem"] = "Erro ao criar cliente.";
     }
-    $_SESSION["resultado"] = $resultado;
 }
-header("location:../aluno.php");
+
+if (isset($_POST["btLogin"])) {
+    $email = $_POST['email'];
+    $senha = $_POST['senha'];
+
+    $clienteDao = new ClienteDao();
+    $res = $clienteDao->login($email, $senha);
+
+    if ($res && count($res) > 0) {
+        $_SESSION["logado"] = true;
+        $_SESSION["idaluno"] = $res[0]->idaluno;
+
+        $response["success"] = true;
+        $response["mensagem"] = "Login realizado com sucesso!";
+    } else {
+        $response["mensagem"] = "Erro ao realizar login.";
+    }
+}
+
+echo json_encode($response);

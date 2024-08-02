@@ -5,20 +5,30 @@ class Cliente
     private $idaluno;
     private $nome;
     private $email;
-    private $foto;
     private $senha;
-    private $adm;
-    private $apelido;
+    private $cpf;
+    private $telefone1;
+    private $telefone2;
+    private $cep;
+    private $logradouro;
+    private $numero;
+    private $cidade;
+    private $estado;
 
-    public function __construct($idaluno, $nome, $email, $foto, $senha, $adm, $apelido)
+    public function __construct($idaluno, $nome, $email, $senha, $cpf, $telefone1, $telefone2, $cep, $logradouro, $numero, $cidade, $estado)
     {
         $this->idaluno = $idaluno;
         $this->nome = $nome;
         $this->email = $email;
-        $this->foto = $foto;
         $this->senha = $senha;
-        $this->adm = $adm;
-        $this->apelido = $apelido;
+        $this->cpf = $cpf;
+        $this->telefone1 = $telefone1;
+        $this->telefone2 = $telefone2;
+        $this->cep = $cep;
+        $this->logradouro = $logradouro;
+        $this->numero = $numero;
+        $this->cidade = $cidade;
+        $this->estado = $estado;
     }
 
     public function __get($key)
