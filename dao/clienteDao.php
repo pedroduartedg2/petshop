@@ -1,18 +1,18 @@
 <?php
-//alunoDao.php
+// clienteDao.php
 class ClienteDao
 {
     public function create(Cliente $obj)
     {
         try {
-            //criando a conexao com o banco
+            // Criando a conexão com o banco
             $banco = Conexao::conectar();
-            //criando o comando SQL
+            // Criando o comando SQL
             $sql = "INSERT INTO cliente(nome, email, senha, cpf, telefone1, telefone2, cep, logradouro, numero, bairro, cidade, estado) 
                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
-            //Prepara o banco para execução
+            // Preparando o banco para execução
             $query = $banco->prepare($sql);
-            //Executa o comando
+            // Executando o comando
             $query->execute([
                 $obj->nome, $obj->email, $obj->senha, $obj->cpf, $obj->telefone1, $obj->telefone2, $obj->cep, $obj->logradouro, $obj->numero, $obj->bairro, $obj->cidade, $obj->estado
             ]);
@@ -28,15 +28,15 @@ class ClienteDao
     public function readAll()
     {
         try {
-            //conectando com o banco
+            // Conectando com o banco
             $banco = Conexao::conectar();
-            //Consulta SQL
+            // Consulta SQL
             $sql = "SELECT * FROM cliente ORDER BY nome";
-            //Executar o comando e armazenar o resultado
+            // Executando o comando e armazenando o resultado
             $resultado = $banco->query($sql);
-            //Criando o array
+            // Criando o array
             $lista = [];
-            //percorrendo o resultado
+            // Percorrendo o resultado
             foreach ($resultado as $linha) {
                 $lista[] = new Cliente(
                     $linha["idCliente"],
@@ -53,7 +53,7 @@ class ClienteDao
                     $linha["cidade"],
                     $linha["estado"]
                 );
-            } //fim foreach
+            }
             Conexao::desconectar();
             return $lista;
         } catch (PDOException $e) {
@@ -64,17 +64,17 @@ class ClienteDao
     public function login($email, $senha)
     {
         try {
-            //conectando com o banco
+            // Conectando com o banco
             $banco = Conexao::conectar();
-            //Consulta SQL
+            // Consulta SQL
             $sql = "SELECT * FROM cliente WHERE email=? AND senha=?";
-            //Executar o comando e armazenar o resultado
+            // Preparando e executando o comando
             $query = $banco->prepare($sql);
             $query->execute([$email, MD5($senha)]);
             $resultado = $query->fetch(PDO::FETCH_ASSOC);
-            //Criando o array
+            // Criando o array
             $lista = [];
-            //percorrendo o resultado
+            // Percorrendo o resultado
             if (is_array($resultado)) {
                 $lista[] = new Cliente(
                     $resultado["idCliente"],
@@ -104,7 +104,7 @@ class ClienteDao
     {
         try {
             $banco = Conexao::conectar();
-            $sql = "DELETE FROM cliente WHERE idaluno = ?";
+            $sql = "DELETE FROM cliente WHERE idCliente = ?";
             $query = $banco->prepare($sql);
             $query->execute([$id]);
             Conexao::desconectar();
@@ -136,12 +136,12 @@ class ClienteDao
             $banco = Conexao::conectar();
             $sql = "UPDATE cliente SET nome=?, email=?, cpf=?, telefone1=?, telefone2=?, cep=?, logradouro=?, numero=?, bairro=?, cidade=?, estado=?";
             $param = [$obj->nome, $obj->email, $obj->cpf, $obj->telefone1, $obj->telefone2, $obj->cep, $obj->logradouro, $obj->numero, $obj->bairro, $obj->cidade, $obj->estado];
-            if (isset($obj->senha)) {
+            if ($obj->senha) {
                 $sql .= ", senha=?";
-                $param[] = $obj->senha;
+                $param[] = MD5($obj->senha);
             }
-            $sql .= " WHERE idaluno=?";
-            $param[] = $obj->idaluno;
+            $sql .= " WHERE idCliente=?";
+            $param[] = $obj->idCliente;
             $query = $banco->prepare($sql);
 
             $query->execute($param);
@@ -149,6 +149,21 @@ class ClienteDao
             return true;
         } catch (PDOException $e) {
             return false;
+        }
+    }
+
+    public function getClienteNomeById($id)
+    {
+        try {
+            $banco = Conexao::conectar();
+            $sql = "SELECT nome FROM cliente WHERE idCliente = ?";
+            $query = $banco->prepare($sql);
+            $query->execute([$id]);
+            $resultado = $query->fetch(PDO::FETCH_ASSOC);
+            Conexao::desconectar();
+            return $resultado ? $resultado['nome'] : null;
+        } catch (PDOException $e) {
+            return null;
         }
     }
 }

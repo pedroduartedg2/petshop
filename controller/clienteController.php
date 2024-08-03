@@ -8,6 +8,7 @@ include_once "../config/utils.php";
 $response = ["success" => false, "mensagem" => ""];
 
 if (isset($_POST["btRegister"])) {
+    $idCliente = isset($_POST['idCliente']) ? intval($_POST['idCliente']) : null;
     $nome = $_POST['nome'];
     $email = $_POST['email'];
     $senha = $_POST['senha'];
@@ -21,30 +22,60 @@ if (isset($_POST["btRegister"])) {
     $cidade = $_POST['cidade'];
     $estado = $_POST['estado'];
 
-    $cliente = new Cliente(
-        null,
-        $nome,
-        $email,
-        MD5($senha),
-        $cpf,
-        $telefone1,
-        $telefone2,
-        $cep,
-        $logradouro,
-        $numero,
-        $bairro,
-        $cidade,
-        $estado
-    );
-
     $clienteDao = new ClienteDao();
-    $sucesso = $clienteDao->create($cliente);
 
-    if ($sucesso) {
-        $response["success"] = true;
-        $response["mensagem"] = "Cliente criado com sucesso!";
+    if ($idCliente) {
+        // Atualização do cliente existente
+        $cliente = new Cliente(
+            $idCliente,
+            $nome,
+            $email,
+            MD5($senha),
+            $cpf,
+            $telefone1,
+            $telefone2,
+            $cep,
+            $logradouro,
+            $numero,
+            $bairro,
+            $cidade,
+            $estado
+        );
+
+        $sucesso = $clienteDao->update($cliente);
+
+        if ($sucesso) {
+            $response["success"] = true;
+            $response["mensagem"] = "Cliente atualizado com sucesso!";
+        } else {
+            $response["mensagem"] = "Erro ao atualizar cliente.";
+        }
     } else {
-        $response["mensagem"] = "Erro ao cadastrar cliente.";
+        // Criação de novo cliente
+        $cliente = new Cliente(
+            null,
+            $nome,
+            $email,
+            MD5($senha),
+            $cpf,
+            $telefone1,
+            $telefone2,
+            $cep,
+            $logradouro,
+            $numero,
+            $bairro,
+            $cidade,
+            $estado
+        );
+
+        $sucesso = $clienteDao->create($cliente);
+
+        if ($sucesso) {
+            $response["success"] = true;
+            $response["mensagem"] = "Cliente criado com sucesso!";
+        } else {
+            $response["mensagem"] = "Erro ao cadastrar cliente.";
+        }
     }
 }
 
