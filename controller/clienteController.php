@@ -60,7 +60,7 @@ if (isset($_POST["btLogin"])) {
         $response["success"] = true;
         $response["mensagem"] = "Login realizado com sucesso!";
     } else {
-        $response["mensagem"] = "Erro ao realizar login.";
+        $response["mensagem"] = "E-mail e/ou senha inválidos.";
     }
 }
 

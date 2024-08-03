@@ -26,16 +26,16 @@ include_once "config/utils.php";
             </div>
             <div class="flex flex-col">
                 <label for="cpf" class="text-sm">CPF *</label>
-                <input name="cpf" type="number" placeholder="00000000000" class="p-2 rounded-md border border-slate-200" required>
+                <input name="cpf" type="text" placeholder="000.000.000-00" oninput="maskCPF(this)" class="p-2 rounded-md border border-slate-200" required>
             </div>
             <div class="flex flex-row gap-2 w-full">
                 <div class="flex flex-col w-full">
                     <label for="celular" class="text-sm">Celular *</label>
-                    <input name="celular" type="number" placeholder="00 000000000" class="p-2 rounded-md border border-slate-200" required>
+                    <input name="celular" type="text" placeholder="00 000000000" class="p-2 rounded-md border border-slate-200" onkeypress="mask(this, mphone);" onblur="mask(this, mphone);" required>
                 </div>
                 <div class="flex flex-col w-full">
                     <label for="telefone" class="text-sm">Telefone</label>
-                    <input name="telefone" type="number" placeholder="00 000000000" class="p-2 rounded-md border border-slate-200">
+                    <input name="telefone" type="text" placeholder="00 000000000" class="p-2 rounded-md border border-slate-200" onkeypress="mask(this, mphone);" onblur="mask(this, mphone);">
                 </div>
             </div>
             <div class="flex flex-row gap-2 w-full">
@@ -67,3 +67,93 @@ include_once "config/utils.php";
         <p class="text-center">Já possui uma conta? <a href="./login.php" class="underline">Entrar</a></p>
     </div>
 </div>
+
+<script>
+    function maskCPF(o) {
+        setTimeout(function() {
+            var v = mcpf(o.value);
+            if (v != o.value) {
+                o.value = v;
+            }
+        }, 1);
+    }
+
+    function mcpf(v) {
+        var r = v.replace(/\D/g, ""); // Remove todos os caracteres não numéricos
+        if (r.length > 11) {
+            r = r.slice(0, 11); // Limita a 11 dígitos
+        }
+        if (r.length > 6) {
+            r = r.replace(/^(\d{3})(\d{3})(\d{0,3})/, "$1.$2.$3"); // Adiciona pontos
+        }
+        if (r.length > 9) {
+            r = r.replace(/^(\d{3}\.\d{3}\.\d{3})(\d{0,2})/, "$1-$2"); // Adiciona hífen
+        }
+        return r;
+    }
+
+    function mask(o, f) {
+        setTimeout(function() {
+            var v = mphone(o.value);
+            if (v != o.value) {
+                o.value = v;
+            }
+        }, 1);
+    }
+
+    function mphone(v) {
+        var r = v.replace(/\D/g, ""); // Remove todos os caracteres não numéricos
+        r = r.replace(/^0/, ""); // Remove o zero inicial, se houver
+        if (r.length > 10) {
+            r = r.replace(/^(\d{2})(\d{5})(\d{4}).*/, "$1 $2-$3"); // Formata para 11 dígitos (com espaço e hífen)
+        } else if (r.length > 5) {
+            r = r.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, "$1 $2-$3"); // Formata para 8 ou 9 dígitos (com espaço e hífen)
+        } else if (r.length > 2) {
+            r = r.replace(/^(\d{2})(\d{0,5})/, "$1 $2"); // Formata para 6 dígitos (com espaço)
+        } else {
+            r = r.replace(/^(\d*)/, "$1"); // Formata para até 2 dígitos (sem espaço)
+        }
+        return r;
+    }
+
+    document.getElementsByName('cep')[0].addEventListener('input', function(event) {
+        let value = event.target.value;
+
+        // Remove tudo que não for número
+        value = value.replace(/\D/g, '');
+
+        // Limita o valor a 8 dígitos
+        if (value.length > 8) {
+            value = value.slice(0, 8);
+        }
+
+        // Adiciona a máscara
+        if (value.length > 8) {
+            value = value.replace(/^(\d{5})(\d{0,3})/, '$1-$2');
+        }
+
+        // Atualiza o valor do campo
+        event.target.value = value;
+    });
+
+    document.getElementsByName('cep')[0].addEventListener('blur', function() {
+        const cep = this.value.replace(/\D/g, ''); // Remove caracteres não numéricos
+        if (cep.length === 8) { // Verifica se o CEP tem 8 dígitos
+            fetch(`https://viacep.com.br/ws/${cep}/json/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.erro) {
+                        alert('CEP não encontrado.');
+                    } else {
+                        document.getElementsByName('logradouro')[0].value = data.logradouro;
+                        // document.getElementsByName('bairro')[0].value = data.bairro;
+                        document.getElementsByName('cidade')[0].value = data.localidade;
+                        document.getElementsByName('estado')[0].value = data.uf;
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao buscar o CEP:', error);
+                });
+        }
+    });
+</script>
