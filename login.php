@@ -7,22 +7,6 @@ include_once "model/cliente.php";
 include_once "dao/clienteDao.php";
 include_once "config/utils.php";
 
-//Criando o objeto Dao
-// $objDao = new ClienteDao();
-
-// // //Validando o email e a senha
-// if (isset($_POST["btSalvar"])) {
-//     $res = $objDao->login($_POST["email"], $_POST["senha"]);
-//     if (count($res) == 0) {
-//         $_SESSION["mensagem"] = "Usuário e/ou senha incorreto(s)";
-//         exibeMensagem();
-//     } else {
-//         $_SESSION["logado"] = true;
-//         $_SESSION["idaluno"] = $res[0]->idaluno;
-
-//         header("location:index.php");
-//     }
-// }
 ?>
 
 <div class="h-[calc(100vh-71.75px)] flex items-center justify-center">
@@ -67,10 +51,21 @@ include_once "config/utils.php";
             console.log(pair[0] + ': ' + pair[1]);
         }
 
-        const response = await fetch('controller/clienteController.php', {
-            method: 'POST',
-            body: formData
-        });
+        const type = formData.get('type');
+
+        let response;
+
+        if (type == "cliente") {
+            response = await fetch('controller/clienteController.php', {
+                method: 'POST',
+                body: formData
+            })
+        } else if (type == "funcionario") {
+            response = await fetch('controller/funcionarioController.php', {
+                method: 'POST',
+                body: formData
+            })
+        }
 
         const result = await response.json();
         document.getElementById('mensagem').textContent = result.mensagem;

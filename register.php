@@ -11,7 +11,14 @@ include_once "config/utils.php";
 <div class="h-[calc(100vh-71.75px)] flex flex-col items-center justify-center gap-2">
     <div class="flex gap-6 flex-col">
         <h1 class="font-bold text-purple-900 text-2xl">Cadastro</h1>
-        <form action="controller/clienteController.php" method="POST" class="flex flex-col gap-2">
+        <form id="registerForm" method="POST" class="flex flex-col gap-2">
+            <div class="flex flex-col">
+                <label for="type" class="text-sm">Tipo de cadastro</label>
+                <select name="type" id="type" class="p-2 rounded-md border border-slate-200">
+                    <option value="cliente" selected>Cliente</option>
+                    <option value="funcionario">Funcionário</option>
+                </select>
+            </div>
             <div class="flex flex-col">
                 <label for="nome" class="text-sm">Nome *</label>
                 <input name="nome" type="text" placeholder="Digite seu nome" class="p-2 rounded-md border border-slate-200" required>
@@ -41,7 +48,7 @@ include_once "config/utils.php";
             <div class="flex flex-row gap-2 w-full">
                 <div class="flex flex-col w-full">
                     <label for="cep" class="text-sm">CEP *</label>
-                    <input name="cep" type="number" placeholder="00000000" class="p-2 rounded-md border border-slate-200" required>
+                    <input name="cep" type="text" placeholder="00000000" class="p-2 rounded-md border border-slate-200" required>
                 </div>
                 <div class="flex flex-col w-full">
                     <label for="logradouro" class="text-sm">Logradouro *</label>
@@ -54,6 +61,10 @@ include_once "config/utils.php";
                     <input name="numero" type="number" placeholder="000" class="p-2 rounded-md border border-slate-200" required>
                 </div>
                 <div class="flex flex-col">
+                    <label for="bairro" class="text-sm">Bairro *</label>
+                    <input name="bairro" type="text" placeholder="Digite o bairro" class="p-2 rounded-md border border-slate-200" required>
+                </div>
+                <div class="flex flex-col">
                     <label for="cidade" class="text-sm">Cidade *</label>
                     <input name="cidade" type="text" placeholder="Digite a cidade" class="p-2 rounded-md border border-slate-200" required>
                 </div>
@@ -64,9 +75,47 @@ include_once "config/utils.php";
             </div>
             <button name="btRegister" type="submit" class="bg-purple-900 p-2 text-slate-50 font-semibold rounded-md mt-2">Cadastrar</button>
         </form>
+        <div id="mensagem" class="text-slate-700 text-center"></div>
         <p class="text-center">Já possui uma conta? <a href="./login.php" class="underline">Entrar</a></p>
     </div>
 </div>
+
+<script>
+    document.getElementById('registerForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        const formData = new FormData(this);
+
+        formData.append('btRegister', 'true');
+
+        for (let pair of formData.entries()) {
+            console.log(pair[0] + ': ' + pair[1]);
+        }
+
+        const type = formData.get('type');
+
+        let response;
+
+        if (type == "cliente") {
+            response = await fetch('controller/clienteController.php', {
+                method: 'POST',
+                body: formData
+            })
+        } else if (type == "funcionario") {
+            response = await fetch('controller/funcionarioController.php', {
+                method: 'POST',
+                body: formData
+            })
+        }
+
+        const result = await response.json();
+        document.getElementById('mensagem').textContent = result.mensagem;
+
+        if (result.success) {
+            window.location.href = 'login.php';
+        }
+    });
+</script>
 
 <script>
     function maskCPF(o) {
@@ -146,7 +195,7 @@ include_once "config/utils.php";
                         alert('CEP não encontrado.');
                     } else {
                         document.getElementsByName('logradouro')[0].value = data.logradouro;
-                        // document.getElementsByName('bairro')[0].value = data.bairro;
+                        document.getElementsByName('bairro')[0].value = data.bairro;
                         document.getElementsByName('cidade')[0].value = data.localidade;
                         document.getElementsByName('estado')[0].value = data.uf;
                     }

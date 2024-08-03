@@ -1,8 +1,8 @@
 <?php
 session_start();
 include_once "../config/conexao.php";
-include_once "../dao/clienteDao.php";
-include_once "../model/cliente.php";
+include_once "../dao/funcionarioDao.php";
+include_once "../model/funcionario.php";
 include_once "../config/utils.php";
 
 $response = ["success" => false, "mensagem" => ""];
@@ -21,7 +21,7 @@ if (isset($_POST["btRegister"])) {
     $cidade = $_POST['cidade'];
     $estado = $_POST['estado'];
 
-    $cliente = new Cliente(
+    $funcionario = new Funcionario(
         null,
         $nome,
         $email,
@@ -37,14 +37,14 @@ if (isset($_POST["btRegister"])) {
         $estado
     );
 
-    $clienteDao = new ClienteDao();
-    $sucesso = $clienteDao->create($cliente);
+    $funcionarioDao = new FuncionarioDao();
+    $sucesso = $funcionarioDao->create($funcionario);
 
     if ($sucesso) {
         $response["success"] = true;
-        $response["mensagem"] = "Cliente criado com sucesso!";
+        $response["mensagem"] = "Funcionário criado com sucesso!";
     } else {
-        $response["mensagem"] = "Erro ao cadastrar cliente.";
+        $response["mensagem"] = "Erro ao cadastrar funcionário.";
     }
 }
 
@@ -52,15 +52,16 @@ if (isset($_POST["btLogin"])) {
     $email = $_POST['email'];
     $senha = $_POST['senha'];
 
-    $clienteDao = new ClienteDao();
-    $sucesso = $clienteDao->login($email, $senha);
+    $funcionarioDao = new FuncionarioDao();
+    $sucesso = $funcionarioDao->login($email, $senha);
 
     if ($sucesso) {
         $_SESSION["logado"] = true;
+
         $_SESSION["user"] = array(
-            'id' => $sucesso[0]->getIdCliente(),
-            'nome' => $sucesso[0]->getNomeCliente(),
-            'type' => "cliente"
+            'id' => $sucesso[0]->getIdFuncionario(),
+            'nome' => $sucesso[0]->getNomeFuncionario(),
+            'type' => "funcionario"
         );
 
         $response["success"] = true;

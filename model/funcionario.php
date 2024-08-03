@@ -1,8 +1,8 @@
 <?php
-class Cliente
+class Funcionario
 {
     //Atributos da tabela aluno
-    private $idCliente;
+    private $idFuncionario;
     private $nome;
     private $email;
     private $senha;
@@ -16,9 +16,9 @@ class Cliente
     private $cidade;
     private $estado;
 
-    public function __construct($idCliente, $nome, $email, $senha, $cpf, $telefone1, $telefone2, $cep, $logradouro, $numero, $bairro, $cidade, $estado)
+    public function __construct($idFuncionario, $nome, $email, $senha, $cpf, $telefone1, $telefone2, $cep, $logradouro, $numero, $bairro, $cidade, $estado)
     {
-        $this->idCliente = $idCliente;
+        $this->idFuncionario = $idFuncionario;
         $this->nome = $nome;
         $this->email = $email;
         $this->senha = $senha;
@@ -33,12 +33,11 @@ class Cliente
         $this->estado = $estado;
     }
 
-    public function getIdCliente()
+    public function getIdfuncionario()
     {
-        return $this->idCliente;
+        return $this->idFuncionario;
     }
-
-    public function getNomeCliente()
+    public function getNomeFuncionario()
     {
         return $this->nome;
     }

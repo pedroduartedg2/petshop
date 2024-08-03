@@ -1,7 +1,7 @@
 <?php
 class Conexao
 {
-    private static $name = "diego165_pet";
+    private static $name = "petshop_db";
     private static $host = "localhost";
     private static $user = "root";
     private static $pass = "";
