@@ -25,14 +25,16 @@ class ServicoAgendamentoDao
     {
         try {
             $banco = Conexao::conectar();
-            $sql = "SELECT * FROM ServicoVisita WHERE idVisita = ?";
+            $sql = "SELECT sv.*, s.nome AS nomeServico 
+                    FROM ServicoVisita sv
+                    JOIN Servico s ON sv.idServico = s.idServico
+                    WHERE sv.idVisita = ?";
             $query = $banco->prepare($sql);
             $query->execute([$idVisita]);
             $result = $query->fetchAll(PDO::FETCH_ASSOC);
             Conexao::desconectar();
             return $result;
         } catch (PDOException $e) {
-            // echo $e->getMessage();
             return [];
         }
     }

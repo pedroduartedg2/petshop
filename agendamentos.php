@@ -78,7 +78,7 @@ if (isset($_SESSION["user"]) && $_SESSION["user"]['type'] === "cliente") {
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
                             </form>
-                            <form action="./service/enviar_email.php" method="POST" class="inline">
+                            <form id="emailForm<?= htmlspecialchars($agendamento['idVisita']) ?>" action="./service/enviar_email.php" method="POST" class="inline">
                                 <input type="hidden" name="idVisita" value="<?= htmlspecialchars($agendamento['idVisita']) ?>">
                                 <button type="submit" class="bg-blue-500 text-white py-1 px-2 rounded hover:bg-blue-600">
                                     <i class="fa-solid fa-envelope"></i>

@@ -130,3 +130,55 @@ include_once "./config/conexao.php";
             .catch(error => console.error('Error loading content:', error));
     }
 </script>
+
+<!-- Inclua agendamentos.php -->
+<?php include 'agendamentos.php'; ?>
+
+<!-- Scripts JavaScript -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const flashMessage = '<?php echo isset($_SESSION["flash_message"]) ? $_SESSION["flash_message"] : ''; ?>';
+
+        if (flashMessage) {
+            showToast(flashMessage, 'success'); // Ou 'error' dependendo do conteúdo da mensagem
+            // Limpar a mensagem da sessão
+            <?php unset($_SESSION['flash_message']); ?>
+        }
+    });
+
+    function showToast(message, type) {
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+
+        // Adiciona o toast ao corpo do documento
+        document.body.appendChild(toast);
+
+        // Remove o toast após 3 segundos
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+</script>
+
+<!-- Estilos para o toast -->
+<style>
+    .toast {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 10px 20px;
+        border-radius: 5px;
+        color: #fff;
+        font-size: 14px;
+        z-index: 1000;
+    }
+
+    .toast.success {
+        background-color: #28a745;
+    }
+
+    .toast.error {
+        background-color: #dc3545;
+    }
+</style>
