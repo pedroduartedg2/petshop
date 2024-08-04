@@ -1,4 +1,6 @@
 <?php
+
+// require_once './model/cliente.php'; // Altere o caminho conforme a estrutura do seu projeto
 // clienteDao.php
 class ClienteDao
 {

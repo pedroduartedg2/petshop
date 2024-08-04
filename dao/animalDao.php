@@ -18,12 +18,56 @@ class AnimalDao
         }
     }
 
+    public function getAnimalsByClientId($idCliente)
+    {
+        try {
+            $banco = Conexao::conectar();
+            $sql = "SELECT idAnimal, nome FROM animal WHERE idCliente = ?";
+            $query = $banco->prepare($sql);
+            $query->execute([$idCliente]);
+            $animais = $query->fetchAll(PDO::FETCH_ASSOC);
+            Conexao::desconectar();
+            return $animais;
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
+
+
     public function readAll()
     {
         try {
             $banco = Conexao::conectar();
             $sql = "SELECT * FROM animal ORDER BY nome";
             $resultado = $banco->query($sql);
+            $lista = [];
+            foreach ($resultado as $linha) {
+                $lista[] = new Animal(
+                    $linha["idAnimal"],
+                    $linha["nome"],
+                    $linha["peso"],
+                    $linha["nascimento"],
+                    $linha["cor"],
+                    $linha["observacao"],
+                    $linha["idCliente"]
+                );
+            }
+            Conexao::desconectar();
+            return $lista;
+        } catch (PDOException $e) {
+            return null;
+        }
+    }
+
+    public function readByCliente($idCliente)
+    {
+        try {
+            $banco = Conexao::conectar();
+            $sql = "SELECT * FROM animal WHERE idCliente = :idCliente ORDER BY nome";
+            $stmt = $banco->prepare($sql);
+            $stmt->bindParam(':idCliente', $idCliente, PDO::PARAM_INT);
+            $stmt->execute();
+            $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $lista = [];
             foreach ($resultado as $linha) {
                 $lista[] = new Animal(

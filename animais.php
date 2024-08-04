@@ -1,4 +1,5 @@
 <?php
+session_start();
 // Inclua o arquivo que contém as classes e métodos necessários
 include_once "./config/conexao.php";
 include_once './model/animal.php';
@@ -9,8 +10,16 @@ include_once './dao/ClienteDao.php';
 $animalDao = new AnimalDao();
 $clienteDao = new ClienteDao();
 
-// Chame o método readAll para obter todos os animais
-$animais = $animalDao->readAll();
+// Verifique o tipo de usuário na sessão
+$isCliente = isset($_SESSION["user"]) && $_SESSION["user"]["type"] === "cliente";
+$clienteId = $isCliente ? $_SESSION["user"]["id"] : null;
+
+// Chame o método readAll para obter todos os animais, ou readByCliente se for um cliente
+if ($isCliente) {
+    $animais = $animalDao->readByCliente($clienteId);
+} else {
+    $animais = $animalDao->readAll();
+}
 ?>
 
 <div class="flex justify-between">
@@ -34,15 +43,19 @@ $animais = $animalDao->readAll();
                     <th class="py-3 border-b border-gray-100 text-left">Nascimento</th>
                     <th class="py-3 border-b border-gray-100 text-left">Cor</th>
                     <th class="py-3 border-b border-gray-100 text-left">Observação</th>
-                    <th class="py-3 border-b border-gray-100 text-left">Cliente</th>
+                    <?php if (!$isCliente) : ?>
+                        <th class="py-3 border-b border-gray-100 text-left">Cliente</th>
+                    <?php endif; ?>
                     <th class="py-3 border-b border-gray-100 text-left flex justify-end">Ações</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($animais as $animal) : ?>
                     <?php
-                    // Busca o nome do cliente
-                    $clienteNome = $clienteDao->getClienteNomeById($animal->idCliente);
+                    // Busca o nome do cliente, se não for um cliente logado
+                    if (!$isCliente) {
+                        $clienteNome = $clienteDao->getClienteNomeById($animal->idCliente);
+                    }
                     ?>
                     <tr class="hover:bg-gray-100">
                         <td class="py-2 border-b border-gray-100"><?= htmlspecialchars($animal->nome) ?></td>
@@ -50,7 +63,9 @@ $animais = $animalDao->readAll();
                         <td class="py-2 border-b border-gray-100"><?= htmlspecialchars(date('d/m/Y', strtotime($animal->nascimento))) ?></td>
                         <td class="py-2 border-b border-gray-100"><?= htmlspecialchars($animal->cor) ?></td>
                         <td class="py-2 border-b border-gray-100"><?= htmlspecialchars($animal->observacao) ?></td>
-                        <td class="py-2 border-b border-gray-100"><?= htmlspecialchars($clienteNome) ?></td> <!-- Nome do cliente -->
+                        <?php if (!$isCliente) : ?>
+                            <td class="py-2 border-b border-gray-100"><?= htmlspecialchars($clienteNome) ?></td>
+                        <?php endif; ?>
                         <td class="py-2 border-b border-gray-100 flex justify-end gap-2">
                             <a href="animal_cadastro.php?id=<?= $animal->idAnimal ?>" class="bg-purple-500 text-white py-1 px-2 rounded hover:bg-purple-600">
                                 <i class="fa-solid fa-pen-to-square"></i>

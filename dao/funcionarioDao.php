@@ -39,7 +39,7 @@ class FuncionarioDao
             //percorrendo o resultado
             foreach ($resultado as $linha) {
                 $lista[] = new Funcionario(
-                    $linha["idCliente"],
+                    $linha["idFuncionario"],
                     $linha["nome"],
                     $linha["email"],
                     $linha["senha"],
@@ -104,7 +104,7 @@ class FuncionarioDao
     {
         try {
             $banco = Conexao::conectar();
-            $sql = "DELETE FROM funcionario WHERE idaluno = ?";
+            $sql = "DELETE FROM funcionario WHERE idFuncionario = ?";
             $query = $banco->prepare($sql);
             $query->execute([$id]);
             Conexao::desconectar();
@@ -118,7 +118,7 @@ class FuncionarioDao
     {
         try {
             $banco = Conexao::conectar();
-            $sql = "SELECT * FROM funcionario WHERE idCliente = ? ORDER BY nome";
+            $sql = "SELECT * FROM funcionario WHERE idFuncionario = ? ORDER BY nome";
             $query = $banco->prepare($sql);
             $query->execute([$id]);
             $lista = $query->fetch(PDO::FETCH_ASSOC);
@@ -140,8 +140,8 @@ class FuncionarioDao
                 $sql .= ", senha=?";
                 $param[] = $obj->senha;
             }
-            $sql .= " WHERE idaluno=?";
-            $param[] = $obj->idaluno;
+            $sql .= " WHERE idFuncionario=?";
+            $param[] = $obj->idFuncionario;
             $query = $banco->prepare($sql);
 
             $query->execute($param);

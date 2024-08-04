@@ -22,6 +22,10 @@ if ($id) {
 // Crie uma instância do ClienteDao e busque todos os clientes
 $clienteDao = new ClienteDao();
 $clientes = $clienteDao->readAll();
+
+// Verifica se o usuário logado é um cliente
+$isCliente = isset($_SESSION["user"]) && $_SESSION["user"]["type"] === "cliente";
+$clienteId = $isCliente ? $_SESSION["user"]["id"] : null;
 ?>
 
 <div class="h-[calc(100vh-71.75px)] flex flex-col gap-2 p-10 items-center justify-center">
@@ -50,17 +54,21 @@ $clientes = $clienteDao->readAll();
                 <label for="observacao" class="text-sm">Observação</label>
                 <textarea name="observacao" placeholder="Observações adicionais" class="p-2 rounded-md border border-slate-200"><?= $id ? htmlspecialchars($animal['observacao']) : '' ?></textarea>
             </div>
-            <div class="flex flex-col">
-                <label for="idCliente" class="text-sm">Cliente *</label>
-                <select name="idCliente" class="p-2 rounded-md border border-slate-200" required>
-                    <option value="" disabled <?= !$id ? 'selected' : '' ?>>Selecione um cliente</option>
-                    <?php foreach ($clientes as $cliente) : ?>
-                        <option value="<?= htmlspecialchars($cliente->getIdCliente()) ?>" <?= $id && $animal['idCliente'] == $cliente->getIdCliente() ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($cliente->getNomeCliente()) ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
+            <?php if ($isCliente) : ?>
+                <input type="hidden" name="idCliente" value="<?= htmlspecialchars($clienteId) ?>">
+            <?php else : ?>
+                <div class="flex flex-col">
+                    <label for="idCliente" class="text-sm">Cliente *</label>
+                    <select name="idCliente" class="p-2 rounded-md border border-slate-200" required>
+                        <option value="" disabled <?= !$id ? 'selected' : '' ?>>Selecione um cliente</option>
+                        <?php foreach ($clientes as $cliente) : ?>
+                            <option value="<?= htmlspecialchars($cliente->getIdCliente()) ?>" <?= $id && $animal['idCliente'] == $cliente->getIdCliente() ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($cliente->getNomeCliente()) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            <?php endif; ?>
             <div class="flex flex-row justify-between mt-2">
                 <button id="btVoltar" name="btVoltar" type="button" class="py-2 px-4 text-purple-950 border border-purple-950 font-semibold rounded-md">Cancelar</button>
                 <button name="btCreate" type="submit" class="bg-purple-900 py-2 px-4 text-slate-50 font-semibold rounded-md"><?= $id ? 'Atualizar Animal' : 'Cadastrar Animal' ?></button>

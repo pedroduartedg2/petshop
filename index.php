@@ -34,6 +34,12 @@ include_once "./config/conexao.php";
                                 <p>Clientes</p>
                             </li>
                         </a>
+                        <a href="#" id="menu-item-funcionarios" class="menu-item" onclick="loadContent(\'funcionarios.php\'); return false;">
+                            <li class="flex flex-row gap-2 items-center w-full py-2 px-4 rounded-md">
+                                <i class="fa-solid fa-user-tie" style="font-size: 1rem;"></i>
+                                <p>Funcionários</p>
+                            </li>
+                        </a>
                         <a href="#" id="menu-item-servicos" class="menu-item" onclick="loadContent(\'servicos.php\'); return false;">
                             <li class="flex flex-row gap-2 items-center w-full py-2 px-4 rounded-md">
                                 <i class="fa-solid fa-list" style="font-size: 1rem;"></i>

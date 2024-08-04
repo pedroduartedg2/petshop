@@ -8,6 +8,7 @@ include_once "../config/utils.php";
 $response = ["success" => false, "mensagem" => ""];
 
 if (isset($_POST["btRegister"])) {
+    $idFuncionario = isset($_POST['idFuncionario']) ? intval($_POST['idFuncionario']) : null;
     $nome = $_POST['nome'];
     $email = $_POST['email'];
     $senha = $_POST['senha'];
@@ -21,30 +22,60 @@ if (isset($_POST["btRegister"])) {
     $cidade = $_POST['cidade'];
     $estado = $_POST['estado'];
 
-    $funcionario = new Funcionario(
-        null,
-        $nome,
-        $email,
-        MD5($senha),
-        $cpf,
-        $telefone1,
-        $telefone2,
-        $cep,
-        $logradouro,
-        $numero,
-        $bairro,
-        $cidade,
-        $estado
-    );
-
     $funcionarioDao = new FuncionarioDao();
-    $sucesso = $funcionarioDao->create($funcionario);
 
-    if ($sucesso) {
-        $response["success"] = true;
-        $response["mensagem"] = "Funcionário criado com sucesso!";
+    if ($idFuncionario) {
+        // Atualização do funcionario existente
+        $funcionario = new Funcionario(
+            $idFuncionario,
+            $nome,
+            $email,
+            MD5($senha),
+            $cpf,
+            $telefone1,
+            $telefone2,
+            $cep,
+            $logradouro,
+            $numero,
+            $bairro,
+            $cidade,
+            $estado
+        );
+
+        $sucesso = $funcionarioDao->update($funcionario);
+
+        if ($sucesso) {
+            $response["success"] = true;
+            $response["mensagem"] = "Funcionário atualizado com sucesso!";
+        } else {
+            $response["mensagem"] = "Erro ao atualizar funcionário.";
+        }
     } else {
-        $response["mensagem"] = "Erro ao cadastrar funcionário.";
+        // Criação de novo Funcionário
+        $funcionario = new Funcionario(
+            null,
+            $nome,
+            $email,
+            MD5($senha),
+            $cpf,
+            $telefone1,
+            $telefone2,
+            $cep,
+            $logradouro,
+            $numero,
+            $bairro,
+            $cidade,
+            $estado
+        );
+
+        $sucesso = $funcionarioDao->create($funcionario);
+
+        if ($sucesso) {
+            $response["success"] = true;
+            $response["mensagem"] = "Funcionário criado com sucesso!";
+        } else {
+            $response["mensagem"] = "Erro ao cadastrar funcionário.";
+        }
     }
 }
 
@@ -57,9 +88,8 @@ if (isset($_POST["btLogin"])) {
 
     if ($sucesso) {
         $_SESSION["logado"] = true;
-
         $_SESSION["user"] = array(
-            'id' => $sucesso[0]->getIdFuncionario(),
+            'id' => $sucesso[0]->getIdfuncionario(),
             'nome' => $sucesso[0]->getNomeFuncionario(),
             'type' => "funcionario"
         );

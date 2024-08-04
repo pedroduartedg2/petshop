@@ -26,6 +26,16 @@ class Servico
         return $this->nome;
     }
 
+    public function getDescricao()
+    {
+        return $this->descricao;
+    }
+
+    public function getPreco()
+    {
+        return $this->preco;
+    }
+
     public function __get($key)
     {
         return $this->{$key};
